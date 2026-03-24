@@ -4,6 +4,7 @@ const STORAGE_META_KEY = 'kd-comercial-mobile-records-meta-v1';
 const SUPABASE_CONFIG_KEY = 'kd-comercial-supabase-config-v1';
 const DELETED_RECORDS_KEY = 'kd-comercial-deleted-records-v1';
 const SUPABASE_TABLE = 'kd_records';
+const KD_WHATSAPP_NUMBER = '5592992717496';
 const DEFAULT_SUPABASE_CONFIG = {
     url: 'https://ixnlonpywqxkfbqolilt.supabase.co',
     anonKey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Iml4bmxvbnB5d3F4a2ZicW9saWx0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM4NTQ4MzUsImV4cCI6MjA4OTQzMDgzNX0.4aanRI5EEavExlN7hSlkJ8COlROt6INWLKhSfhJSYCs'
@@ -1202,23 +1203,19 @@ function sendCurrentQuoteWhatsapp() {
 function sendSupplierWhatsapp() {
     const quote = state.lastQuote;
     if (!quote) {
-        alert('Gere o orcamento antes de mandar para o fornecedor.');
-        return;
-    }
-
-    const supplierPhone = normalizePhone(elements.supplierPhone.value);
-    if (!supplierPhone) {
-        alert('Preencha o WhatsApp do fornecedor.');
+        alert('Gere o orcamento antes de mandar para o seu WhatsApp.');
         return;
     }
 
     const customerName = quote.customerName || 'Cliente';
     const deliveryText = quote.deliveryMode === 'retirada' ? 'Retirada pelo cliente' : 'Entregar conforme combinado';
     const observations = elements.notes.value.trim();
+    const supplierName = elements.supplierName.value.trim() || 'Fornecedor';
 
     const message = [
         'KD Embalagens',
-        'Pedido para producao',
+        'Encaminhar para fornecedor',
+        `Fornecedor: ${supplierName}`,
         `Cliente final: ${customerName}`,
         '',
         'ITENS',
@@ -1227,10 +1224,10 @@ function sendSupplierWhatsapp() {
         `Entrega: ${deliveryText}`,
         observations ? `Observacoes: ${observations}` : '',
         '',
-        'Produzir conforme pedido acima.'
+        'Encaminhar esta ordem para o fornecedor.'
     ].filter(Boolean).join('\n');
 
-    openWhatsApp(supplierPhone, message);
+    openWhatsApp(KD_WHATSAPP_NUMBER, message);
 }
 
 function openSupplierPdf() {
