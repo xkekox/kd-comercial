@@ -137,6 +137,7 @@ const elements = {
     saveRecord: document.getElementById('saveRecord'),
     sendQuoteWhatsapp: document.getElementById('sendQuoteWhatsapp'),
     sendSupplierWhatsapp: document.getElementById('sendSupplierWhatsapp'),
+    supplierPdf: document.getElementById('supplierPdf'),
     downloadQuotePdf: document.getElementById('downloadQuotePdf'),
     sendChargeWhatsapp: document.getElementById('sendChargeWhatsapp'),
     generateReceipt: document.getElementById('generateReceipt'),
@@ -1193,6 +1194,40 @@ function sendCurrentQuoteWhatsapp() {
 function sendSupplierWhatsapp() {
     const quote = state.lastQuote;
     if (!quote) {
+        alert('Gere o orcamento antes de mandar para o fornecedor.');
+        return;
+    }
+
+    const supplierPhone = normalizePhone(elements.supplierPhone.value);
+    if (!supplierPhone) {
+        alert('Preencha o WhatsApp do fornecedor.');
+        return;
+    }
+
+    const customerName = quote.customerName || 'Cliente';
+    const deliveryText = quote.deliveryMode === 'retirada' ? 'Retirada pelo cliente' : 'Entregar conforme combinado';
+    const observations = elements.notes.value.trim();
+
+    const message = [
+        'KD Embalagens',
+        'Pedido para producao',
+        `Cliente final: ${customerName}`,
+        '',
+        'ITENS',
+        ...quote.items.map((item, index) => `${index + 1}. ${item.modelKey} | ${item.quantity} un | ${item.categoryLabel || '-'}`),
+        '',
+        `Entrega: ${deliveryText}`,
+        observations ? `Observacoes: ${observations}` : '',
+        '',
+        'Produzir conforme pedido acima.'
+    ].filter(Boolean).join('\n');
+
+    openWhatsApp(supplierPhone, message);
+}
+
+function openSupplierPdf() {
+    const quote = state.lastQuote;
+    if (!quote) {
         alert('Gere o orcamento antes de abrir o PDF do fornecedor.');
         return;
     }
@@ -1710,6 +1745,7 @@ elements.generateQuote.addEventListener('click', () => {
 elements.saveRecord.addEventListener('click', saveRecord);
 elements.sendQuoteWhatsapp.addEventListener('click', sendCurrentQuoteWhatsapp);
 elements.sendSupplierWhatsapp.addEventListener('click', sendSupplierWhatsapp);
+elements.supplierPdf.addEventListener('click', openSupplierPdf);
 elements.downloadQuotePdf.addEventListener('click', downloadQuotePdf);
 elements.sendChargeWhatsapp.addEventListener('click', sendChargeWhatsapp);
 elements.generateReceipt.addEventListener('click', generateReceipt);
