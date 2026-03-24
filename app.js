@@ -381,6 +381,10 @@ function openWhatsApp(phone, text) {
         ? `https://wa.me/${cleanPhone}`
         : 'https://wa.me/';
     const url = `${base}?text=${encodeURIComponent(text)}`;
+    if (window.KDAndroid && typeof window.KDAndroid.openExternalUrl === 'function') {
+        window.KDAndroid.openExternalUrl(url);
+        return;
+    }
     const isMobile = /Android|iPhone|iPad|iPod|Mobile/i.test(navigator.userAgent || '') || window.innerWidth <= 820;
     if (isMobile) {
         window.location.href = url;
