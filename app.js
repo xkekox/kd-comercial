@@ -380,7 +380,15 @@ function openWhatsApp(phone, text) {
         ? `https://wa.me/${cleanPhone}`
         : 'https://wa.me/';
     const url = `${base}?text=${encodeURIComponent(text)}`;
-    window.open(url, '_blank');
+    const isMobile = /Android|iPhone|iPad|iPod|Mobile/i.test(navigator.userAgent || '') || window.innerWidth <= 820;
+    if (isMobile) {
+        window.location.href = url;
+        return;
+    }
+    const openedWindow = window.open(url, '_blank', 'noopener,noreferrer');
+    if (!openedWindow) {
+        window.location.href = url;
+    }
 }
 
 function persistRecords() {
